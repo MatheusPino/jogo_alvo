@@ -1,0 +1,110 @@
+<canvas width="600" height="400"></canvas>
+
+<script>
+
+    function desenhaCirculo(x, y, raio, cor){
+        
+        pincel.fillStyle = cor;
+        pincel.beginPath();
+        pincel.arc(x, y, raio, 0, 2 * Math.PI);
+        pincel.fill();
+    }
+
+    function sorteiaPontos(maximo){
+
+        return Math.floor(Math.random()*maximo);
+    }
+    
+    function limpaTela(){
+
+        pincel.clearRect(0, 0, 600, 400);
+    }
+   
+    function mostra(x, y, texto) {
+        
+        var tela = document.querySelector('canvas');
+        var pincel = tela.getContext('2d');
+
+        pincel.font='15px Georgia';
+        pincel.fillStyle='black';
+        pincel.fillText(texto, x, y);    
+    }
+
+    function desenhaAlvo(x, y){
+
+        desenhaCirculo(x, y, raio+20, 'red');
+        desenhaCirculo(x, y, raio + 10, 'white');
+        desenhaCirculo(x, y, raio, 'red');
+    }
+
+    function acertou(){
+
+        var pontos = 0;
+
+        if (acertouCentro){
+            pontos = 100;
+        } else if (acertouMeio){
+            pontos = 50;
+        } else  if (acertouBorda){
+            pontos = 20;
+        }
+        
+        acertouCentro = false;
+        acertouMeio = false;
+        acertouBorda = false;
+      
+        totalPontos = totalPontos + pontos;
+    }
+   
+    function atira (evento){
+
+        xTiro = evento.pageX - tela.offsetLeft;
+        yTiro = evento.pageY - tela.offsetTop;
+
+        if ((xTiro >= xAleatorio - raio) && (xTiro <= xAleatorio + raio) && 
+        (yTiro >= yAleatorio - raio) && (yTiro <= yAleatorio + raio)){
+            acertouCentro = true;
+            alert("100 Pontos");
+            
+        } else if ((xTiro >= xAleatorio - (raio+10)) && (xTiro <= xAleatorio + (raio+10)) && 
+        (yTiro >= yAleatorio - (raio+10)) && (yTiro <= yAleatorio + (raio+10))){
+            acertouMeio = true;
+            alert("50 Pontos");
+
+        } else if ((xTiro >= xAleatorio - (raio+20)) && (xTiro <= xAleatorio + (raio+20)) && 
+        (yTiro >= yAleatorio - (raio+20)) && (yTiro <= yAleatorio + (raio+20))){
+            acertouBorda = true;
+            alert("20 Pontos");
+        }
+    }
+    
+    function atualizaTela(){
+
+        limpaTela();
+        xAleatorio = sorteiaPontos(600  - raio);
+        yAleatorio = sorteiaPontos(400 - raio);
+        acertou();
+        mostra(20, 380, ("Total de pontos: " + totalPontos));
+        desenhaAlvo(xAleatorio, yAleatorio);
+        }
+
+    var tela = document.querySelector('canvas');
+    var pincel = tela.getContext('2d');
+   
+    var raio = 10;
+
+    var xAleatorio;
+    var yAleatorio;
+     
+    var xTiro;
+    var yTiro;
+
+    var acertouCentro = false;
+    var acertouMeio = false;
+    var acertouBorda = false;
+    var totalPontos = 0;
+
+    tela.onclick = atira;   
+    setInterval(atualizaTela, 1000); 
+
+</script>
